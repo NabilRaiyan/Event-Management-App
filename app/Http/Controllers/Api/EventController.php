@@ -16,7 +16,7 @@ class EventController extends Controller
     public function index()
     {
         // adding api resource
-        return EventResource::collection(Event::all());
+        return EventResource::collection(Event::with('user', 'attendees')->get());
     }
 
     /**
@@ -45,6 +45,7 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
+        $event->load('user', 'attendees');
         return new EventResource($event);
     }
 

@@ -20,6 +20,8 @@ class EventResource extends JsonResource
             'description' => $this->description,
             'start' => $this->start,
             'end' => $this->end,
+            'user'=> new UserResource($this->whenLoaded('user')),
+            'attendees' => AttendeeResource::collection($this->whenLoaded('attendees'))
 
         ];
     }
