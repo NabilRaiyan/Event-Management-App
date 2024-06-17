@@ -35,6 +35,7 @@ class AttendeeController extends Controller
         return new AttendeeResource($attendee);
     }
 
+    
     /**
      * Display the specified attendee.
      */
