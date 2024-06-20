@@ -15,8 +15,23 @@ class EventController extends Controller
      */
     public function index()
     {
+        
         // adding api resource
         return EventResource::collection(Event::with('user', 'attendees')->get());
+    }
+
+
+    // helper methos to get response using queries
+    protected function shouldIncludeRelation(string $relation): bool{
+        $include = request()->query('include');
+
+        if(!$include){
+            return false;
+        }
+        $relations = array_map('trim',explode(',', $include));
+
+        return in_array($relation, $relations);
+
     }
 
     /**
