@@ -5,42 +5,29 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EventResource;
 use Illuminate\Http\Request;
+use App\Http\Traits\CanLoadRelationships;
 
 use \App\Models\Event;
 
 class EventController extends Controller
 {
+    use CanLoadRelationships;
     /**
      * Display a listing of the events.
      */
     public function index()
     {
-        $query = Event::query();
         $relations = ['user', 'attendees', 'attendees.user'];
+        $query = $this->loadRelationships(Event::query(), $relations);
 
-        foreach($relations as $relation){
-            $query->when(
-                $this->shouldIncludeRelation($relation),
-                fn($q)=>$q->with($relation)
-            );
-        }
+     
         // adding api resource
         return EventResource::collection($query->latest()->paginate());
     }
 
 
     // helper methos to get response using queries
-    protected function shouldIncludeRelation(string $relation): bool{
-        $include = request()->query('include');
-
-        if(!$include){
-            return false;
-        }
-        $relations = array_map('trim',explode(',', $include));
-
-        return in_array($relation, $relations);
-
-    }
+   
 
     /**
      * Store a newly created event in storage.
