@@ -6,19 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\EventResource;
 use Illuminate\Http\Request;
 use App\Http\Traits\CanLoadRelationships;
-
 use \App\Models\Event;
 
 class EventController extends Controller
 {
     use CanLoadRelationships;
+    private array $relations = ['user', 'attendees', 'attendees.user'];
+
     /**
      * Display a listing of the events.
      */
     public function index()
     {
-        $relations = ['user', 'attendees', 'attendees.user'];
-        $query = $this->loadRelationships(Event::query(), $relations);
+        $query = $this->loadRelationships(Event::query());
 
      
         // adding api resource
@@ -47,7 +47,7 @@ class EventController extends Controller
             'user_id' => 1
         ]);
 
-        return new EventResource($event);
+        return new EventResource($this->loadRelationships($event));
     }
 
     /**
@@ -56,7 +56,7 @@ class EventController extends Controller
     public function show(Event $event)
     {
         $event->load('user', 'attendees');
-        return new EventResource($event);
+        return new EventResource($this->loadRelationships($event));
     }
 
     /**
@@ -75,7 +75,7 @@ class EventController extends Controller
         
         );
 
-        return new EventResource($event);
+        return new EventResource($this->loadRelationships($event));
     }
 
     /**
