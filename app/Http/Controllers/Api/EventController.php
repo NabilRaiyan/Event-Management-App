@@ -15,9 +15,17 @@ class EventController extends Controller
      */
     public function index()
     {
-        
+        $query = Event::query();
+        $relations = ['user', 'attendees', 'attendees.user'];
+
+        foreach($relations as $relation){
+            $query->when(
+                $this->shouldIncludeRelation($relation),
+                fn($q)=>$q->with($relation)
+            );
+        }
         // adding api resource
-        return EventResource::collection(Event::with('user', 'attendees')->get());
+        return EventResource::collection($query->latest()->paginate());
     }
 
 
