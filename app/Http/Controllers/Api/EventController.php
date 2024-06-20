@@ -13,6 +13,11 @@ class EventController extends Controller
     use CanLoadRelationships;
     private array $relations = ['user', 'attendees', 'attendees.user'];
 
+    // protecting routes
+    public function __construct(){
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
+    }
+
     /**
      * Display a listing of the events.
      */
@@ -44,7 +49,7 @@ class EventController extends Controller
                 'end' => 'required|date|after:start',
             ]),
 
-            'user_id' => 1
+            'user_id' => $request->user()->id
         ]);
 
         return new EventResource($this->loadRelationships($event));
